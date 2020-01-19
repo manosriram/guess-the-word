@@ -1,0 +1,43 @@
+#wrapper {
+    padding-top: 3em;
+}
+
+#guessLetter {
+    padding-top: 25em;
+    margin: auto;
+    text-align: center;
+} 
+
+input::placeholder {
+    font-size: 1.5em;
+    text-align: center;
+}
+
+#guessLetter input {
+    width: 5%; 
+    font-size: 1.5em;
+}
+
+#teamA {
+  width: 14em;
+  float: left;
+  height: 25em;
+  margin: 10px;
+  border: 1px solid black;
+}
+
+#teamB {
+  width: 14em;
+  float: right;
+  height: 25em;
+  margin: 10px;
+  border: 1px solid black;
+}
+
+span, table, #fillWord {
+    text-align: center;
+    margin: auto;
+    font-size: 1.7em;
+    padding-top: 5em;
+}
+
