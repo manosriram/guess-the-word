@@ -11,28 +11,28 @@ const initLGS = (name, tm) => {
   };
 };
 
-const btn = document.querySelector("#guessButton");
-const inpFld = document.querySelector("#guessText");
-const frm = document.querySelector("#guessLetter");
+const btn = document.querySelector('#guessButton');
+const inpFld = document.querySelector('#guessText');
+const frm = document.querySelector('#guessLetter');
 const eL = document.querySelector('#fillWord');
 
-frm.addEventListener("submit", e => {
-    e.preventDefault();
+frm.addEventListener('submit', e => {
+  e.preventDefault();
 
-    let guess = inpFld.value;
-    if (guess !== " ")
-        socket.emit("guessed", {guess});
+  let guess = inpFld.value;
+  if (guess !== ' ') socket.emit('guessed', {guess});
 });
 
-btn.addEventListener("click", () => {
-    console.log("YUP");
-
-    
-
+btn.addEventListener('click', () => {
+  console.log('YUP');
 });
 
 const createWordSpace = word => {
   let wordLength = word.length;
+
+  while (eL.firstChild) {
+    eL.removeChild(eL.firstChild);
+  }
 
   for (let t = 0; t < wordLength; ++t) {
     let sp = document.createElement('span');
@@ -45,13 +45,16 @@ const createWordSpace = word => {
   }
 };
 
-socket.on("correctGuess", data => {
-    let {index} = data;
-    
-    console.log(eL.children[index].innerText);
-    eL.children[index].innerText = inpFld.value;
+const openLetter = (word, letterIndex) => {};
 
-    socket.emit("updateLocalState", {});
+socket.on('correctGuess', data => {
+  let {index, word} = data;
+  console.log(word);
+
+  console.log(eL.children[index].innerText);
+  eL.children[index].innerText = inpFld.value;
+  openLetter(word, index);
+  createWordSpace(word);
 });
 
 socket.on('start', data => {
@@ -61,7 +64,7 @@ socket.on('start', data => {
       localGameState.name = prompt('Your Name ');
     }
     socket.emit('game-state', {name: localGameState.name});
-      console.log(word);
+    console.log(word);
     createWordSpace(word);
     initLGS(localGameState.name, team);
   }

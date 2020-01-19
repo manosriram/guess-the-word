@@ -42,7 +42,7 @@ const initSocketServer = server => {
       console.log(gameState.team[socket.team]);
     });
 
-        console.log(temp);
+    console.log(temp);
     let team = gameState.chance;
     socket.team = team;
     if (gameState.chance === 'A') {
@@ -62,19 +62,22 @@ const initSocketServer = server => {
       updateGameState(data);
     });
 
-    socket.on("guessed", data => {
-        let letter = data.guess;
+    socket.on('guessed', data => {
+      let letter = data.guess;
 
-        for (let t=0;t<gameState.word.length;++t) {
-            if (temp[t] === letter && !gameState.guessed.includes(t)) {
-                gameState.guessed.push(t);
-                io.emit("correctGuess", {index: t});
-                break;
-            }
+      for (let t = 0; t < gameState.word.length; ++t) {
+        if (temp[t] === letter && !gameState.guessed.includes(t)) {
+          gameState.guessed.push(t);
+
+          gameState.word =
+            gameState.word.substr(0, t) + letter + gameState.word.substr(t + 1);
+
+          console.log(gameState.word);
+          io.emit('correctGuess', {index: t, word: gameState.word});
+          break;
         }
+      }
     });
-
-
   });
 };
 
