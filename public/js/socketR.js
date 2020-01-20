@@ -15,6 +15,9 @@ const btn = document.querySelector('#guessButton');
 const inpFld = document.querySelector('#guessText');
 const frm = document.querySelector('#guessLetter');
 const eL = document.querySelector('#fillWord');
+const wind = document.querySelector('#window');
+const teamA = document.querySelector('#teamA');
+const teamB = document.querySelector('#teamB');
 
 const flipDisplay = team => {
   if (team === localGameState.teamID) frm.style.display = 'none';
@@ -27,6 +30,12 @@ frm.addEventListener('submit', e => {
   let guess = inpFld.value;
   if (guess !== ' ') socket.emit('guess', {guess});
 });
+
+const updateDashboard = stat => {
+  if (stat) {
+  } else {
+  }
+};
 
 const createWordSpace = word => {
   let wordLength = word.length;
@@ -56,12 +65,42 @@ const hideOrShow = gS => {
 };
 */
 
+socket.on('updateList', data => {
+  while (teamA.firstChild) {
+    teamA.removeChild(teamA.firstChild);
+  }
+  while (teamB.firstChild) {
+    teamB.removeChild(teamB.firstChild);
+  }
+  teamA.innerText = 'Team A';
+  teamB.innerText = 'Team B';
+
+  const {online} = data;
+
+  for (let t = 0; t < online.length; ++t) {
+    const headerFive = document.createElement('h2');
+    headerFive.innerText = online[t].name;
+
+    if (online[t].team === 'A') teamA.appendChild(headerFive);
+    else teamB.appendChild(headerFive);
+  }
+});
+
+socket.on('teamTurnStat', data => {
+  const {now} = data;
+
+  const inTxt = document.createElement('h3');
+  inTxt.innerText = `Team ${now}'s turn`;
+  wind.appendChild(inTxt);
+});
+
 socket.on('correctGuess', data => {
   let {index, word, team, scs} = data;
   if (scs) {
     eL.children[index].innerText = inpFld.value;
     createWordSpace(word);
   }
+  updateDashboard(scs, team);
   flipDisplay(team);
 });
 
@@ -73,6 +112,7 @@ socket.on('openGame', data => {
       localGameState.name = prompt('Your Name ');
     }
     createWordSpace(word);
+    socket.emit('nameEntry', {name: localGameState.name});
     initLGS(localGameState.name, team);
     flipDisplay(origin);
   }

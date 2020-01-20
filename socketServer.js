@@ -23,30 +23,29 @@ const gameState = {
   now: 'A',
   word: word,
   guessed: [],
+  online: [],
 };
 
 const assignTeam = () => {
-  if (gameState.team['A'].length >= gameState.team['B'].length) return 'B';
-  else return 'A';
+  if (gameState.team['A'].length === gameState.team['B'].length) return 'A';
+  else return 'B';
 };
 
-const flipTurns = () => {
+const flipTurns = io => {
   if (gameState.now === 'A') gameState.now = 'B';
   else gameState.now = 'A';
+
+  io.emit('teamTurnStat', {now: gameState.now});
 };
 
 const updateGameState = () => {};
 
-const disconnectUser = (sock, id) => {
-  return id !== sock.id;
-};
-
 const initSocketServer = server => {
   const io = socketIO(server);
 
-  const emitGameState = () => io.emit('emitGameState', {gameState});
-
   io.on('connection', socket => {
+    const emitList = () => io.emit('updateList', {online: gameState.online});
+
     console.log('Current user: ', socket.id);
 
     socket.on('disconnect', discSCT => {
@@ -57,6 +56,13 @@ const initSocketServer = server => {
           return socket.id !== player;
         },
       );
+
+      gameState.online = gameState.online.filter(on => {
+        return on.id !== socket.id;
+      });
+
+      console.log(gameState.online);
+      emitList();
     });
 
     const newPlayer = assignTeam(),
@@ -66,7 +72,12 @@ const initSocketServer = server => {
     gameState.team[newPlayer].push(playerID);
 
     // Start a game with new player.
-    io.emit('openGame', {team: newPlayer, id: playerID, word: gameState.word, origin: gameState.now});
+    io.emit('openGame', {
+      team: newPlayer,
+      id: playerID,
+      word: gameState.word,
+      origin: gameState.now,
+    });
 
     socket.on('guess', guessLetter => {
       console.log(temp);
@@ -83,13 +94,23 @@ const initSocketServer = server => {
           break;
         }
       }
-      flipTurns();
+      flipTurns(io);
       io.emit('correctGuess', {
         index: t,
         word: gameState.word,
         team: gameState.now,
         scs: done,
       });
+    });
+
+    socket.on('nameEntry', data => {
+      const {name} = data;
+      gameState.online.push({
+        name,
+        id: socket.id,
+        team: socket.team,
+      });
+      emitList();
     });
   });
 };
