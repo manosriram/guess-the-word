@@ -52,23 +52,45 @@ const initSocketServer = server => {
     socket.on('disconnect', discSCT => {
       console.log('disc user: ', socket.id);
 
-      gameState.team[socket.team] = gameState.team[socket.team].filter(player => {
+      gameState.team[socket.team] = gameState.team[socket.team].filter(
+        player => {
           return socket.id !== player;
-      });
-
-      console.log('Team A: ', gameState.team['A'].length);
-      console.log('Team B: ', gameState.team['B'].length);
+        },
+      );
     });
 
     const newPlayer = assignTeam(),
       playerID = socket.id;
+
     socket.team = newPlayer;
     gameState.team[newPlayer].push(playerID);
 
     // Start a game with new player.
-    io.emit('openGame', {team: newPlayer, id: playerID, word: word});
-    flipTurns();
+    io.emit('openGame', {team: newPlayer, id: playerID, word: gameState.word, origin: gameState.now});
+
+    socket.on('guess', guessLetter => {
+      console.log(temp);
+      let t;
+      let done = false;
+      for (t = 0; t < temp.length; ++t) {
+        if (temp[t] === guessLetter.guess && !gameState.guessed.includes(t)) {
+          gameState.word =
+            gameState.word.substr(0, t) +
+            temp[t] +
+            gameState.word.substr(t + 1);
+          gameState.guessed.push(t);
+          done = true;
+          break;
+        }
+      }
+      flipTurns();
+      io.emit('correctGuess', {
+        index: t,
+        word: gameState.word,
+        team: gameState.now,
+        scs: done,
+      });
+    });
   });
 };
-
 module.exports = initSocketServer;

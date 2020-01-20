@@ -16,14 +16,17 @@ const inpFld = document.querySelector('#guessText');
 const frm = document.querySelector('#guessLetter');
 const eL = document.querySelector('#fillWord');
 
+const flipDisplay = team => {
+  if (team === localGameState.teamID) frm.style.display = 'none';
+  else frm.style.display = 'block';
+};
+
 frm.addEventListener('submit', e => {
   e.preventDefault();
 
   let guess = inpFld.value;
-  if (guess !== ' ') socket.emit('guessed', {guess});
+  if (guess !== ' ') socket.emit('guess', {guess});
 });
-
-btn.addEventListener('click', () => {});
 
 const createWordSpace = word => {
   let wordLength = word.length;
@@ -43,11 +46,6 @@ const createWordSpace = word => {
   }
 };
 
-const flipDisplay = team => {
-  if (team !== localGameState.teamID) frm.style.display = 'none';
-  else frm.style.display = 'block';
-};
-
 /*
 const hideOrShow = gS => {
   if (gS === localGameState.teamID) {
@@ -59,13 +57,16 @@ const hideOrShow = gS => {
 */
 
 socket.on('correctGuess', data => {
-  let {index, word} = data;
-  eL.children[index].innerText = inpFld.value;
-  createWordSpace(word);
+  let {index, word, team, scs} = data;
+  if (scs) {
+    eL.children[index].innerText = inpFld.value;
+    createWordSpace(word);
+  }
+  flipDisplay(team);
 });
 
 socket.on('openGame', data => {
-  const {team, id, word} = data;
+  const {team, id, word, origin} = data;
 
   if (!localGameState.name) {
     while (!localGameState.name) {
@@ -73,7 +74,6 @@ socket.on('openGame', data => {
     }
     createWordSpace(word);
     initLGS(localGameState.name, team);
+    flipDisplay(origin);
   }
-  console.table(team, localGameState.teamID);
-  flipDisplay(team);
 });
