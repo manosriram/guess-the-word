@@ -6,7 +6,7 @@ const express = require("express"),
     path = require("path");
 
 const server = http.createServer(app);
-const socket = require("./socketE");
+const socket = require("./socketServer.js");
 socket(server);
 const cors = require("cors");
 
