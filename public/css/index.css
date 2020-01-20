@@ -68,3 +68,7 @@ table,
   font-size: 1.7em;
   padding-top: 5em;
 }
+#team {
+    margin: auto;
+    text-align: center;
+}

@@ -9,15 +9,22 @@ const initLGS = (name, tm) => {
     name: name,
     teamID: tm,
   };
+    const header = document.createElement("h2");
+    header.innerText = `[${localGameState.name}] - [Team ${localGameState.teamID}]`;
+    teamName.appendChild(header);
 };
 
 const btn = document.querySelector('#guessButton');
 const inpFld = document.querySelector('#guessText');
 const frm = document.querySelector('#guessLetter');
 const eL = document.querySelector('#fillWord');
+const teamName = document.querySelector("#team");
 const wind = document.querySelector('#window');
+wind.style.textAlign = "center";
+wind.style.overflow = "scroll";
 const teamA = document.querySelector('#teamA');
 const teamB = document.querySelector('#teamB');
+const wrap = document.querySelector("#wrapper");
 
 const flipDisplay = team => {
   if (team === localGameState.teamID) frm.style.display = 'none';

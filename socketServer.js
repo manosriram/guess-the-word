@@ -27,15 +27,15 @@ const gameState = {
 };
 
 const assignTeam = () => {
-  if (gameState.team['A'].length === gameState.team['B'].length) return 'A';
-  else return 'B';
+  if (gameState.online.length & 1) return 'B';
+  else return 'A';
 };
 
 const flipTurns = io => {
+  io.emit('teamTurnStat', {now: gameState.now});
+
   if (gameState.now === 'A') gameState.now = 'B';
   else gameState.now = 'A';
-
-  io.emit('teamTurnStat', {now: gameState.now});
 };
 
 const updateGameState = () => {};
