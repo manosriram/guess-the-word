@@ -1,18 +1,32 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 2em;
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
 }
 
 body {
-    justify-content: center;
-    align-items: center;
+  font-family: sans-serif;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
 #wrapper {
-    padding-top: 25px;
+    width: 70%;
+    margin: 0 auto;
 }
 
 div {
-    display: block;
+  display: block;
 }
 
 #guessLetter {
@@ -31,33 +45,33 @@ input::placeholder {
   font-size: 1.5em;
 }
 
-#teamA, #teamB {
-    text-align: center;
+#teamA,
+#teamB {
+  text-align: center;
 }
 
 #teamA {
-    height: auto;
-    border: 1px solid black;
-    width: 15%;
-    float: left;
-    margin-left: 15vw;
+  height: auto;
+  border: 1px solid black;
+  width: 15%;
+  float: left;
+  margin-left: 15vw;
 }
 
 #window {
-    justify-content: center;
-    border: 1px solid black;
-    width: 25%;
-    margin: auto;
-    height: 50vh;
+  justify-content: center;
+  border: 1px solid black;
+  width: 25%;
+  margin: auto;
+  height: 50vh;
 }
 
 #teamB {
-    height: auto;
-    border: 1px solid black;
-    width: 15%;
-    float: right;
-    margin-right: 15vw;
-
+  height: auto;
+  border: 1px solid black;
+  width: 15%;
+  float: right;
+  margin-right: 15vw;
 }
 
 span,
@@ -67,8 +81,4 @@ table,
   margin: auto;
   font-size: 1.7em;
   padding-top: 5em;
-}
-#team {
-    margin: auto;
-    text-align: center;
 }

@@ -9,26 +9,32 @@ const initLGS = (name, tm) => {
     name: name,
     teamID: tm,
   };
-    const header = document.createElement("h2");
-    header.innerText = `[${localGameState.name}] - [Team ${localGameState.teamID}]`;
-    teamName.appendChild(header);
+  const header = document.createElement('h1');
+  header.innerText = `[${localGameState.name}] - [Team ${localGameState.teamID}]`;
+  teamName.appendChild(header);
 };
 
 const btn = document.querySelector('#guessButton');
 const inpFld = document.querySelector('#guessText');
 const frm = document.querySelector('#guessLetter');
 const eL = document.querySelector('#fillWord');
-const teamName = document.querySelector("#team");
+const teamName = document.querySelector('#team');
 const wind = document.querySelector('#window');
-wind.style.textAlign = "center";
-wind.style.overflow = "scroll";
+
 const teamA = document.querySelector('#teamA');
 const teamB = document.querySelector('#teamB');
-const wrap = document.querySelector("#wrapper");
+const wrap = document.querySelector('#wrapper');
+
+wind.style.textAlign = 'center';
+wind.style.overflow = 'scroll';
+teamA.style.overflow = 'scroll';
+teamB.style.overflow = 'scroll';
 
 const flipDisplay = team => {
   if (team === localGameState.teamID) frm.style.display = 'none';
   else frm.style.display = 'block';
+
+  wind.scrollIntoView();
 };
 
 frm.addEventListener('submit', e => {
@@ -36,12 +42,16 @@ frm.addEventListener('submit', e => {
 
   let guess = inpFld.value;
   if (guess !== ' ') socket.emit('guess', {guess});
+  inpFld.value = '';
 });
 
-const updateDashboard = stat => {
-  if (stat) {
-  } else {
-  }
+const updateDashboard = (scs, team, scores) => {
+  const inTxt = document.createElement('h3');
+  if (scs) inTxt.innerText = `Correct Guess Team ${team},   +1`;
+  else inTxt.innerText = `Wrong Guess Team ${team},   -1`;
+
+  wind.appendChild(inTxt);
+  teamName.innerText = `Team A :: ${scores.A} | Team B :: ${scores.B}`;
 };
 
 const createWordSpace = word => {
@@ -56,21 +66,11 @@ const createWordSpace = word => {
     sp.style.borderBottom = '1px solid black';
     sp.padding = '15px';
 
-    sp.innerText = word[t];
+    sp.innerText = word[t] + ' ';
 
     eL.appendChild(sp);
   }
 };
-
-/*
-const hideOrShow = gS => {
-  if (gS === localGameState.teamID) {
-    frm.style.display = 'none';
-  } else {
-    frm.style.display = 'block';
-  }
-};
-*/
 
 socket.on('updateList', data => {
   while (teamA.firstChild) {
@@ -85,7 +85,8 @@ socket.on('updateList', data => {
   const {online} = data;
 
   for (let t = 0; t < online.length; ++t) {
-    const headerFive = document.createElement('h2');
+    const headerFive = document.createElement('div');
+    headerFive.id = "hF";
     headerFive.innerText = online[t].name;
 
     if (online[t].team === 'A') teamA.appendChild(headerFive);
@@ -102,12 +103,12 @@ socket.on('teamTurnStat', data => {
 });
 
 socket.on('correctGuess', data => {
-  let {index, word, team, scs} = data;
+  let {index, word, team, scs, scores} = data;
   if (scs) {
     eL.children[index].innerText = inpFld.value;
     createWordSpace(word);
   }
-  updateDashboard(scs, team);
+  updateDashboard(scs, team, scores);
   flipDisplay(team);
 });
 

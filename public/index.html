@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/index.css" />
     <title>Guess the Word!</title>
   </head>
@@ -9,12 +10,20 @@
     <h4 id="team"></h4>
     <table id="fillWord"></table>
     <div id="wrapper">
-      <div id="teamA">Team A</div>
-      <div id="teamB">Team B</div>
+      <br />
+      <h1 id="teamA">
+        Team A
+        <span class="teamAScore"></span>
+      </h1>
+
+      <h1 id="teamB">
+        Team B
+        <span class="teamBScore"></span>
+      </h1>
       <div id="window"></div>
     </div>
     <form id="guessLetter" action="">
-      <input type="text" maxlength="1" id="guessText" autofocus/>
+      <input type="text" maxlength="1" id="guessText" autofocus />
       <button type="submit" id="guessButton">Guess</button>
     </form>
   </body>

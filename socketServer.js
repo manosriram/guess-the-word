@@ -20,7 +20,7 @@ const gameState = {
     A: 0,
     B: 0,
   },
-  now: 'A',
+  now: 'B',
   word: word,
   guessed: [],
   online: [],
@@ -94,12 +94,19 @@ const initSocketServer = server => {
           break;
         }
       }
+      if (done) {
+          gameState.teamScore[gameState.now]++;
+      } else {
+          gameState.teamScore[gameState.now]--;
+      }
+        
       flipTurns(io);
       io.emit('correctGuess', {
         index: t,
         word: gameState.word,
         team: gameState.now,
         scs: done,
+        scores: gameState.teamScore
       });
     });
 
