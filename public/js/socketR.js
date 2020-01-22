@@ -1,3 +1,5 @@
+const frm = document.querySelector('#guessLetter');
+frm.style.visibility = "hidden";
 const socket = io('http://localhost:5000/');
 var localGameState = {
   name: '',
@@ -9,26 +11,18 @@ const initLGS = (name, tm) => {
     name: name,
     teamID: tm,
   };
-  const header = document.createElement('h1');
-  header.innerText = `[${localGameState.name}] - [Team ${localGameState.teamID}]`;
-  teamName.appendChild(header);
 };
 
 const btn = document.querySelector('#guessButton');
 const inpFld = document.querySelector('#guessText');
-const frm = document.querySelector('#guessLetter');
 const eL = document.querySelector('#fillWord');
 const teamName = document.querySelector('#team');
 const wind = document.querySelector('#window');
 
-const teamA = document.querySelector('#teamA');
-const teamB = document.querySelector('#teamB');
 const wrap = document.querySelector('#wrapper');
 
 wind.style.textAlign = 'center';
 wind.style.overflow = 'scroll';
-teamA.style.overflow = 'scroll';
-teamB.style.overflow = 'scroll';
 
 const flipDisplay = team => {
   if (team === localGameState.teamID) frm.style.display = 'none';
@@ -46,9 +40,9 @@ frm.addEventListener('submit', e => {
 });
 
 const updateDashboard = (scs, team, scores) => {
-  const inTxt = document.createElement('h3');
-  if (scs) inTxt.innerText = `Correct Guess Team ${team},   +1`;
-  else inTxt.innerText = `Wrong Guess Team ${team},   -1`;
+  const inTxt = document.createElement('p');
+  if (scs) inTxt.innerText = `|\nCorrect Guess Team ${team},   +1`;
+  else inTxt.innerText = `|\nWrong Guess Team ${team},   -1`;
 
   wind.appendChild(inTxt);
   teamName.innerText = `Team A :: ${scores.A} | Team B :: ${scores.B}`;
@@ -73,31 +67,30 @@ const createWordSpace = word => {
 };
 
 socket.on('updateList', data => {
-  while (teamA.firstChild) {
-    teamA.removeChild(teamA.firstChild);
+  const unolA = document.querySelector("#unorA");
+  const unolB = document.querySelector("#unorB");
+  while (unolA.firstChild) {
+    unolA.removeChild(unolA.firstChild);
   }
-  while (teamB.firstChild) {
-    teamB.removeChild(teamB.firstChild);
+  while (unolB.firstChild) {
+    unolB.removeChild(unolB.firstChild);
   }
-  teamA.innerText = 'Team A';
-  teamB.innerText = 'Team B';
-
   const {online} = data;
 
   for (let t = 0; t < online.length; ++t) {
-    const headerFive = document.createElement('div');
-    headerFive.id = "hF";
-    headerFive.innerText = online[t].name;
+    const innerE = document.createElement("li");
+      innerE.classList.add("list-group-item");
+    innerE.innerText = online[t].name;
 
-    if (online[t].team === 'A') teamA.appendChild(headerFive);
-    else teamB.appendChild(headerFive);
+    if (online[t].team === 'A') unolA.appendChild(innerE);
+    else unolB.appendChild(innerE);
   }
 });
 
 socket.on('teamTurnStat', data => {
   const {now} = data;
 
-  const inTxt = document.createElement('h3');
+  const inTxt = document.createElement('p');
   inTxt.innerText = `Team ${now}'s turn`;
   wind.appendChild(inTxt);
 });
@@ -123,5 +116,6 @@ socket.on('openGame', data => {
     socket.emit('nameEntry', {name: localGameState.name});
     initLGS(localGameState.name, team);
     flipDisplay(origin);
+    frm.style.visibility = "visible";
   }
 });
