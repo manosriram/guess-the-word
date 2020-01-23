@@ -16,31 +16,38 @@
     <h4 id="team"></h4>
     <table id="fillWord"></table>
     <br />
-    <form id="guessLetter" action="">
-      <input type="text" maxlength="1" id="guessText" autofocus />
-      <button type="submit" id="guessButton">Guess</button>
+    <form id="selectTeam">
+      <h5>Select Your Team.</h5>
+      <br />
+      <input class="sel" type="button" value="A" placeholder="Team A" />
+      &nbsp;
+      <input class="sel" type="button" value="B" placeholder="Team B" />
     </form>
-    <br />
-    <div id="wrapper">
-      <div id="teamA">
-        <h4>Team A</h4>
-        <div class="card" style="width: auto;">
-          <ul class="list-group list-group-flush" id="unorA"></ul>
+    <div id="hideFirst">
+      <form id="guessLetter" action="">
+        <input type="text" maxlength="1" id="guessText" autofocus />
+        <button type="submit" id="guessButton">Guess</button>
+      </form>
+      <br />
+      <div id="wrapper">
+        <div id="teamA">
+          <h4 id="A">Team A</h4>
+          <div class="card" style="width: auto;">
+            <ul class="list-group list-group-flush" id="unorA"></ul>
+          </div>
+        </div>
+        &nbsp; &nbsp; &nbsp;
+        <div id="teamB">
+          <h4 id="B">Team B</h4>
+          <div class="card" style="width: auto;">
+            <ul class="list-group list-group-flush" id="unorB"></ul>
+          </div>
         </div>
       </div>
-      &nbsp;
-      &nbsp;
-      &nbsp;
-      <div id="teamB">
-        <h4>Team B</h4>
-        <div class="card" style="width: auto;">
-          <ul class="list-group list-group-flush" id="unorB"></ul>
-        </div>
-      </div>
-    </div>
-    <br />
+      <br />
 
-    <div id="window"></div>
+      <div id="window"></div>
+    </div>
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/socketR.js" type="module"></script>

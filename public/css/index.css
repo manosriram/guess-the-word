@@ -24,13 +24,12 @@ div {
     margin: auto;
     text-align: center;
     font-size: 3rem;
-    margin-bottom: 3rem;
-    padding-top: 10em;
+    margin-top: 9rem;
 }
 #window {
     overflow: scroll;
     height: 30vh;
-    width: 40vw;
+    width: 70%;
     margin: auto;
     font-family: monospace;
     font-size: 1.1rem;
@@ -40,4 +39,8 @@ div {
     margin: auto;
     text-align: center;
     padding-bottom: 10px;
+}
+#selectTeam {
+    margin: auto;
+    text-align: center;
 }

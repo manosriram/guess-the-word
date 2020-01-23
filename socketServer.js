@@ -11,6 +11,10 @@ var pattern = /[0-9a-zA-Z]+/g;
 temp = getRandomWord();
 let word = temp.replace(/[a-zA-Z0-9]/g, '*');
 
+const stateName = {
+  name: '',
+};
+
 const gameState = {
   team: {
     A: [],
@@ -20,7 +24,7 @@ const gameState = {
     A: 0,
     B: 0,
   },
-  now: 'B',
+  now: 'A',
   word: word,
   guessed: [],
   online: [],
@@ -32,10 +36,10 @@ const assignTeam = () => {
 };
 
 const flipTurns = io => {
-  io.emit('teamTurnStat', {now: gameState.now});
-
   if (gameState.now === 'A') gameState.now = 'B';
   else gameState.now = 'A';
+
+  io.emit('teamTurnStat', {now: gameState.now});
 };
 
 const updateGameState = () => {};
@@ -49,38 +53,32 @@ const initSocketServer = server => {
     console.log('Current user: ', socket.id);
 
     socket.on('disconnect', discSCT => {
-      console.log('disc user: ', socket.id);
-
+    console.log('disc user: ', socket.id);
+    
+    if (gameState.team[socket.team]) {
       gameState.team[socket.team] = gameState.team[socket.team].filter(
         player => {
           return socket.id !== player;
         },
       );
+    }
 
       gameState.online = gameState.online.filter(on => {
         return on.id !== socket.id;
       });
-
-      console.log(gameState.online);
       emitList();
     });
 
-    const newPlayer = assignTeam(),
-      playerID = socket.id;
-
-    socket.team = newPlayer;
-    gameState.team[newPlayer].push(playerID);
+    playerID = socket.id;
 
     // Start a game with new player.
     io.emit('openGame', {
-      team: newPlayer,
       id: playerID,
       word: gameState.word,
       origin: gameState.now,
     });
 
     socket.on('guess', guessLetter => {
-      console.log(temp);
       let t;
       let done = false;
       for (t = 0; t < temp.length; ++t) {
@@ -95,29 +93,37 @@ const initSocketServer = server => {
         }
       }
       if (done) {
-          gameState.teamScore[gameState.now]++;
+        gameState.teamScore[gameState.now]++;
       } else {
-          gameState.teamScore[gameState.now]--;
+        gameState.teamScore[gameState.now]--;
       }
-        
+
       flipTurns(io);
       io.emit('correctGuess', {
         index: t,
         word: gameState.word,
         team: gameState.now,
         scs: done,
-        scores: gameState.teamScore
+        scores: gameState.teamScore,
       });
+    });
+
+    socket.on('teamUpdate', data => {
+      const {team} = data;
+      socket.team = team;
+      gameState.team[team].push(socket.id);
+      gameState.online.push({
+        team,
+        name: stateName.name,
+        id: socket.id,
+      });
+      console.log('Update ', gameState);
+      emitList();
     });
 
     socket.on('nameEntry', data => {
       const {name} = data;
-      gameState.online.push({
-        name,
-        id: socket.id,
-        team: socket.team,
-      });
-      emitList();
+      stateName.name = name;
     });
   });
 };
